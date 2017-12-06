@@ -1,0 +1,19 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Kuba",
+      "mail": "custom@audiocustom.pl"
+    },
+    {
+      "id": 2,
+      "name": "Ida",
+      "mail": "ida@audiocustom.pl"
+    },
+    {
+      "id": 3,
+      "name": "test",
+      "mail": "a@a"
+    }
+  ]
+}
