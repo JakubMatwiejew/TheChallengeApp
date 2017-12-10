@@ -10250,6 +10250,28 @@ var NewUserChallenge = function (_React$Component3) {
             }
         };
 
+        _this3.startChallenge = function () {
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth() + 1;
+            var yyyy = today.getFullYear();
+            var challengeDetails = {
+                start: dd + '/' + mm + '/' + yyyy,
+                startDay: dd,
+                startMonth: mm,
+                startYear: yyyy,
+                name: _this3.props.userName,
+                mail: _this3.props.userMail,
+                type: _this3.props.challengeType,
+                goal: _this3.props.challengeGoal
+            };
+            fetch('http://localhost:3000/users', {
+                method: 'POST',
+                body: JSON.stringify(challengeDetails),
+                headers: { "Content-Type": "application/json" }
+            }).then(console.log(challengeDetails));
+        };
+
         return _this3;
     }
 
@@ -10288,7 +10310,7 @@ var NewUserChallenge = function (_React$Component3) {
                 _react2.default.createElement('br', null),
                 _react2.default.createElement(
                     'button',
-                    null,
+                    { onClick: this.startChallenge },
                     'Rozpocznij wyzwanie!'
                 )
             );

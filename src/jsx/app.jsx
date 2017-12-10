@@ -98,9 +98,10 @@ class LogPage extends React.Component{
 }
 
 class NewUserChallenge extends React.Component{
-    constructor(props){
-        super(props)
+    constructor(props) {
+        super(props);
     }
+
     handleChallengeTypeChange = (e) => {
         if( typeof this.props.handleChallengeTypeChange === 'function'){
             this.props.handleChallengeTypeChange;
@@ -110,6 +111,27 @@ class NewUserChallenge extends React.Component{
         if( typeof this.props.handleChallengeGoal === 'function'){
             this.props.handleChallengeGoal;
         }
+    }
+    startChallenge = () => {
+        let today = new Date();
+        let dd = today.getDate();
+        let mm = today.getMonth()+1;
+        let yyyy = today.getFullYear();
+        const challengeDetails = {
+            start: dd+'/'+mm+'/'+yyyy,
+            startDay: dd,
+            startMonth: mm,
+            startYear: yyyy,
+            name: this.props.userName,
+            mail: this.props.userMail,
+            type: this.props.challengeType,
+            goal: this.props.challengeGoal
+        };
+        fetch('http://localhost:3000/users',{
+            method: 'POST',
+            body: JSON.stringify(challengeDetails),
+            headers: {"Content-Type" : "application/json"}
+        }).then(console.log(challengeDetails));
     }
     render(){
         if(this.props.newUser == false) return false
@@ -121,7 +143,7 @@ class NewUserChallenge extends React.Component{
                 </select>
                 <h3>Podaj swój cel</h3>
                 <input onChange={this.props.handleChallengeGoal}/><br/>
-                <button>Rozpocznij wyzwanie!</button>
+                <button onClick={this.startChallenge}>Rozpocznij wyzwanie!</button>
             </div>
         )
     }

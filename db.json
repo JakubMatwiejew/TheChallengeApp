@@ -1,19 +1,15 @@
 {
   "users": [
     {
-      "id": 1,
+      "start": "10/12/2017",
+      "startDay": 10,
+      "startMonth": 12,
+      "startYear": 2017,
       "name": "Kuba",
-      "mail": "custom@audiocustom.pl"
-    },
-    {
-      "id": 2,
-      "name": "Ida",
-      "mail": "ida@audiocustom.pl"
-    },
-    {
-      "id": 3,
-      "name": "test",
-      "mail": "a@a"
+      "mail": "cutom@audiocustom.pl",
+      "type": "programming",
+      "goal": "50",
+      "id": 1
     }
   ]
 }
