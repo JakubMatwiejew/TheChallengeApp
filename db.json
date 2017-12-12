@@ -1,15 +1,40 @@
 {
   "users": [
     {
-      "start": "10/12/2017",
-      "startDay": 10,
+      "start": "12/12/2017",
+      "startDay": 12,
       "startMonth": 12,
       "startYear": 2017,
       "name": "Kuba",
-      "mail": "cutom@audiocustom.pl",
+      "mail": "kuba@",
       "type": "programming",
       "goal": "50",
+      "progress": 50,
       "id": 1
+    },
+    {
+      "start": "12/12/2017",
+      "startDay": 12,
+      "startMonth": 12,
+      "startYear": 2017,
+      "name": "Ida",
+      "mail": "ida@",
+      "type": "running",
+      "goal": "3",
+      "progress": 10,
+      "id": 2
+    },
+    {
+      "start": "12/12/2017",
+      "startDay": 12,
+      "startMonth": 12,
+      "startYear": 2017,
+      "name": "Kasia",
+      "mail": "kasia@",
+      "type": "programming",
+      "goal": "100",
+      "progress": 99,
+      "id": 3
     }
   ]
 }

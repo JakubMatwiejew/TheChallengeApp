@@ -125,7 +125,8 @@ class NewUserChallenge extends React.Component{
             name: this.props.userName,
             mail: this.props.userMail,
             type: this.props.challengeType,
-            goal: this.props.challengeGoal
+            goal: this.props.challengeGoal,
+            progress: 0
         };
         fetch('http://localhost:3000/users',{
             method: 'POST',
@@ -151,19 +152,57 @@ class NewUserChallenge extends React.Component{
 
 class OldUserChallenge extends React.Component{
     constructor(props){
-        super(props)
+        super(props);
+        this.state={
+            challengeGoal: "",
+            challengeType: "",
+            challengeProgress: "",
+            todaysProgress: "",
+            indexNr: "",
+            dbAdress: ""
+        }
     }
     handleChallengeProgress = (e) => {
-        if( typeof this.props.handleChallengeProgress === 'function'){
-            this.props.handleChallengeProgress;
+        this.setState({
+            todaysProgress: e.target.value,
+        })
+    }
+    handleProgress = (e) => {
+        const progress = {
+            progress: parseInt(this.state.challengeProgress) + parseInt(this.state.todaysProgress)
         }
+        fetch(this.state.dbAdress,{
+            method: 'PATCH',
+            body: JSON.stringify(progress),
+            headers: {"Content-Type" : "application/json"}
+        }).then(console.log(progress));
+    }
+    getNumber = (value, arr, prop) => {
+        for(var i = 0; i < arr.length; i++) {
+            if(arr[i][prop] === value) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    componentDidMount(){
+        var indexNr = this.getNumber (this.props.userName, this.props.users, "name");
+        this.setState({
+            challengeType: this.props.users[indexNr].type,
+            challengeGoal: this.props.users[indexNr].goal,
+            challengeProgress: this.props.users[indexNr].progress,
+            dbAdress: 'http://localhost:3000/users/'+(indexNr+1),
+            indexNr: indexNr+1
+        })
     }
     render(){
         if(this.props.newUser == true) return false
         return(<div>
+                <h3>Cel: {this.state.challengeGoal}</h3>
+                <h3>Typ: {this.state.challengeType}</h3>
                 <h3>Wszisz swoje postępy:</h3>
-                <input onChange={this.props.handleChallengeProgress}/><br/>
-                <button>Zapisz postępy</button>
+                <input onChange={this.handleChallengeProgress}/><br/>
+                <button onClick={this.handleProgress}>Zapisz postępy</button>
             </div>
         )
     }
@@ -178,7 +217,7 @@ class ChallengeInfo extends React.Component{
         return(<div>
                 <h1>Witaj {this.props.userName}!</h1>
                 <NewUserChallenge challengeType={this.props.challengeType} challengeGoal={this.props.challengeGoal} userName={this.props.userName} userMail={this.props.userMail} newUser={this.props.newUser} handleChallengeGoal={this.props.handleChallengeGoal} handleChallengeTypeChange={this.props.handleChallengeTypeChange}/>
-                <OldUserChallenge userName={this.props.userName} userMail={this.props.userMail} newUser={this.props.newUser} handleChallengeProgress={this.props.handleChallengeProgress}/>
+                <OldUserChallenge users={this.props.users} userName={this.props.userName} userMail={this.props.userMail} newUser={this.props.newUser} />
             </div>
         )
     }
@@ -223,16 +262,11 @@ class App extends React.Component{
             challengeGoal: e.target.value,
         })
     }
-    handleChallengeProgress = (e) => {
-        this.setState({
-            challengeProgress: e.target.value,
-        })
-    }
     handleLogClick = (e, logged) => {
         if(logged){
             this.setState({
                 newUser: false,
-            })
+            });
         }else {
             if (this.state.userMail.length == 0 || this.state.userName.length == 0) {
                 this.setState({
@@ -268,7 +302,7 @@ class App extends React.Component{
         return(<div>
                 <h1>TheChallengeApp</h1>
                 <LogPage userLogged={this.state.userLogged} actionLogin={this.setLogged} display={this.state.displayLog} userMail={this.state.userMail} users={this.state.users} userName={this.state.userName} handleMailChange={this.handleMailChange} handleNameChange={this.handleNameChange}/>
-                <ChallengeInfo challengeType={this.state.challengeType} challengeGoal={this.state.challengeGoal} userLogged={this.state.userLogged} newUser={this.state.newUser} handleChallengeProgress={this.handleChallengeProgress} handleChallengeGoal={this.handleChallengeGoal} handleChallengeTypeChange={this.handleChallengeTypeChange} users={this.state.users} userName={this.state.userName} userMail={this.state.userMail}/>
+                <ChallengeInfo users={this.state.users} challengeType={this.state.challengeType} challengeGoal={this.state.challengeGoal} userLogged={this.state.userLogged} newUser={this.state.newUser} handleChallengeGoal={this.handleChallengeGoal} handleChallengeTypeChange={this.handleChallengeTypeChange} users={this.state.users} userName={this.state.userName} userMail={this.state.userMail}/>
             </div>
         )
     }

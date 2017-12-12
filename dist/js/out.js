@@ -10078,6 +10078,8 @@ var _reactDom2 = _interopRequireDefault(_reactDom);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -10263,7 +10265,8 @@ var NewUserChallenge = function (_React$Component3) {
                 name: _this3.props.userName,
                 mail: _this3.props.userMail,
                 type: _this3.props.challengeType,
-                goal: _this3.props.challengeGoal
+                goal: _this3.props.challengeGoal,
+                progress: 0
             };
             fetch('http://localhost:3000/users', {
                 method: 'POST',
@@ -10329,15 +10332,55 @@ var OldUserChallenge = function (_React$Component4) {
         var _this4 = _possibleConstructorReturn(this, (OldUserChallenge.__proto__ || Object.getPrototypeOf(OldUserChallenge)).call(this, props));
 
         _this4.handleChallengeProgress = function (e) {
-            if (typeof _this4.props.handleChallengeProgress === 'function') {
-                _this4.props.handleChallengeProgress;
-            }
+            _this4.setState({
+                todaysProgress: e.target.value
+            });
         };
 
+        _this4.handleProgress = function (e) {
+            var progress = {
+                progress: parseInt(_this4.state.challengeProgress) + parseInt(_this4.state.todaysProgress)
+            };
+            fetch(_this4.state.dbAdress, {
+                method: 'PATCH',
+                body: JSON.stringify(progress),
+                headers: { "Content-Type": "application/json" }
+            }).then(console.log(progress));
+        };
+
+        _this4.getNumber = function (value, arr, prop) {
+            for (var i = 0; i < arr.length; i++) {
+                if (arr[i][prop] === value) {
+                    return i;
+                }
+            }
+            return -1;
+        };
+
+        _this4.state = {
+            challengeGoal: "",
+            challengeType: "",
+            challengeProgress: "",
+            todaysProgress: "",
+            indexNr: "",
+            dbAdress: ""
+        };
         return _this4;
     }
 
     _createClass(OldUserChallenge, [{
+        key: 'componentDidMount',
+        value: function componentDidMount() {
+            var indexNr = this.getNumber(this.props.userName, this.props.users, "name");
+            this.setState({
+                challengeType: this.props.users[indexNr].type,
+                challengeGoal: this.props.users[indexNr].goal,
+                challengeProgress: this.props.users[indexNr].progress,
+                dbAdress: 'http://localhost:3000/users/' + (indexNr + 1),
+                indexNr: indexNr + 1
+            });
+        }
+    }, {
         key: 'render',
         value: function render() {
             if (this.props.newUser == true) return false;
@@ -10347,13 +10390,25 @@ var OldUserChallenge = function (_React$Component4) {
                 _react2.default.createElement(
                     'h3',
                     null,
+                    'Cel: ',
+                    this.state.challengeGoal
+                ),
+                _react2.default.createElement(
+                    'h3',
+                    null,
+                    'Typ: ',
+                    this.state.challengeType
+                ),
+                _react2.default.createElement(
+                    'h3',
+                    null,
                     'Wszisz swoje post\u0119py:'
                 ),
-                _react2.default.createElement('input', { onChange: this.props.handleChallengeProgress }),
+                _react2.default.createElement('input', { onChange: this.handleChallengeProgress }),
                 _react2.default.createElement('br', null),
                 _react2.default.createElement(
                     'button',
-                    null,
+                    { onClick: this.handleProgress },
                     'Zapisz post\u0119py'
                 )
             );
@@ -10387,7 +10442,7 @@ var ChallengeInfo = function (_React$Component5) {
                     '!'
                 ),
                 _react2.default.createElement(NewUserChallenge, { challengeType: this.props.challengeType, challengeGoal: this.props.challengeGoal, userName: this.props.userName, userMail: this.props.userMail, newUser: this.props.newUser, handleChallengeGoal: this.props.handleChallengeGoal, handleChallengeTypeChange: this.props.handleChallengeTypeChange }),
-                _react2.default.createElement(OldUserChallenge, { userName: this.props.userName, userMail: this.props.userMail, newUser: this.props.newUser, handleChallengeProgress: this.props.handleChallengeProgress })
+                _react2.default.createElement(OldUserChallenge, { users: this.props.users, userName: this.props.userName, userMail: this.props.userMail, newUser: this.props.newUser })
             );
         }
     }]);
@@ -10428,12 +10483,6 @@ var App = function (_React$Component6) {
         _this6.handleChallengeGoal = function (e) {
             _this6.setState({
                 challengeGoal: e.target.value
-            });
-        };
-
-        _this6.handleChallengeProgress = function (e) {
-            _this6.setState({
-                challengeProgress: e.target.value
             });
         };
 
@@ -10494,6 +10543,8 @@ var App = function (_React$Component6) {
     }, {
         key: 'render',
         value: function render() {
+            var _React$createElement;
+
             if (!this.state.users) {
                 return _react2.default.createElement('div', null);
             }
@@ -10506,7 +10557,7 @@ var App = function (_React$Component6) {
                     'TheChallengeApp'
                 ),
                 _react2.default.createElement(LogPage, { userLogged: this.state.userLogged, actionLogin: this.setLogged, display: this.state.displayLog, userMail: this.state.userMail, users: this.state.users, userName: this.state.userName, handleMailChange: this.handleMailChange, handleNameChange: this.handleNameChange }),
-                _react2.default.createElement(ChallengeInfo, { challengeType: this.state.challengeType, challengeGoal: this.state.challengeGoal, userLogged: this.state.userLogged, newUser: this.state.newUser, handleChallengeProgress: this.handleChallengeProgress, handleChallengeGoal: this.handleChallengeGoal, handleChallengeTypeChange: this.handleChallengeTypeChange, users: this.state.users, userName: this.state.userName, userMail: this.state.userMail })
+                _react2.default.createElement(ChallengeInfo, (_React$createElement = { users: this.state.users, challengeType: this.state.challengeType, challengeGoal: this.state.challengeGoal, userLogged: this.state.userLogged, newUser: this.state.newUser, handleChallengeGoal: this.handleChallengeGoal, handleChallengeTypeChange: this.handleChallengeTypeChange }, _defineProperty(_React$createElement, 'users', this.state.users), _defineProperty(_React$createElement, 'userName', this.state.userName), _defineProperty(_React$createElement, 'userMail', this.state.userMail), _React$createElement))
             );
         }
     }]);
