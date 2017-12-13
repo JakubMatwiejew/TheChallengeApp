@@ -10253,15 +10253,15 @@ var NewUserChallenge = function (_React$Component3) {
         };
 
         _this3.startChallenge = function () {
-            var today = new Date();
-            var dd = today.getDate();
-            var mm = today.getMonth() + 1;
-            var yyyy = today.getFullYear();
+            var startDate = new Date();
+            var dd = startDate.getDate();
+            var mm = startDate.getMonth() + 1;
+            var yyyy = startDate.getFullYear();
             var challengeDetails = {
-                start: dd + '/' + mm + '/' + yyyy,
-                startDay: dd,
-                startMonth: mm,
-                startYear: yyyy,
+                start: startDate,
+                dd: dd,
+                mm: mm,
+                yyyy: yyyy,
                 name: _this3.props.userName,
                 mail: _this3.props.userMail,
                 type: _this3.props.challengeType,
@@ -10358,6 +10358,9 @@ var OldUserChallenge = function (_React$Component4) {
         };
 
         _this4.state = {
+            startDate: "",
+            actualDate: "",
+            dayOfTheChallenge: "",
             challengeGoal: "",
             challengeType: "",
             challengeProgress: "",
@@ -10372,9 +10375,19 @@ var OldUserChallenge = function (_React$Component4) {
         key: 'componentDidMount',
         value: function componentDidMount() {
             var indexNr = this.getNumber(this.props.userName, this.props.users, "name");
+            var dd = this.props.users[indexNr].dd;
+            var mm = this.props.users[indexNr].mm;
+            var yyyy = this.props.users[indexNr].yyyy;
+            var oneDay = 24 * 60 * 60 * 1000;
+            var firstDate = new Date(yyyy, mm - 1, dd);
+            var secondDate = new Date();
+            var diffDays = Math.ceil(Math.abs((firstDate.getTime() - secondDate.getTime()) / oneDay));
             this.setState({
+                startDate: this.props.users[indexNr].start,
+                actualDate: new Date(),
+                dayOfTheChallenge: diffDays,
                 challengeType: this.props.users[indexNr].type,
-                challengeGoal: this.props.users[indexNr].goal,
+                challengeGoal: this.props.users[indexNr].goal - this.state.todaysProgress,
                 challengeProgress: this.props.users[indexNr].progress,
                 dbAdress: 'http://localhost:3000/users/' + (indexNr + 1),
                 indexNr: indexNr + 1
@@ -10384,6 +10397,10 @@ var OldUserChallenge = function (_React$Component4) {
         key: 'render',
         value: function render() {
             if (this.props.newUser == true) return false;
+            var toGo = this.state.challengeGoal - this.state.challengeProgress;
+            if (toGo <= 0) {
+                toGo = "Cel osiągnięty";
+            };
             return _react2.default.createElement(
                 'div',
                 null,
@@ -10392,6 +10409,18 @@ var OldUserChallenge = function (_React$Component4) {
                     null,
                     'Cel: ',
                     this.state.challengeGoal
+                ),
+                _react2.default.createElement(
+                    'h3',
+                    null,
+                    'Do celu: ',
+                    toGo
+                ),
+                _react2.default.createElement(
+                    'h3',
+                    null,
+                    'Dzie\u0144 wyzwania: ',
+                    this.state.dayOfTheChallenge
                 ),
                 _react2.default.createElement(
                     'h3',
