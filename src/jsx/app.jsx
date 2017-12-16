@@ -24,11 +24,11 @@ class LogDetails extends React.Component{
     handleLogClick = (e) => {
             if (this.props.userMail.length == 0 || this.props.userName.length == 0) {
                 this.setState({
-                    actionLogInfo: "Wypełnij pola!"
+                    actionLogInfo: "Fill the form!!"
                 })
             } else if (this.props.userMail.indexOf('@') < 0) {
                 this.setState({
-                    actionLogInfo: "Podaj prawidłowy adres e-mail!"
+                    actionLogInfo: "Wrong e-mail adress!!"
                 })
             } else {
                 this.setState({
@@ -90,7 +90,7 @@ class LogPage extends React.Component{
     render(){
         if(this.props.userLogged == true) return false
         return(<div>
-                <h2>Type your user name to log in or register</h2>
+                <h2>Type your user name and e-mail adress to log in or register</h2>
                 <LogDetails actionLogin={this.props.actionLogin} actionLogInfo={this.props.actionLogInfo} handleLogClick={this.props.handleLogClick} userMail={this.props.userMail} users={this.props.users} userName={this.props.userName} handleMailChange={this.props.handleMailChange} handleNameChange={this.props.handleNameChange}/>
             </div>
         )
@@ -100,6 +100,9 @@ class LogPage extends React.Component{
 class NewUserChallenge extends React.Component{
     constructor(props) {
         super(props);
+        this.state={
+            clicked: false
+        }
     }
 
     handleChallengeTypeChange = (e) => {
@@ -133,18 +136,26 @@ class NewUserChallenge extends React.Component{
             body: JSON.stringify(challengeDetails),
             headers: {"Content-Type" : "application/json"}
         }).then(console.log(challengeDetails));
+        this.setState({
+            clicked: true
+        })
     }
     render(){
-        if(this.props.newUser == false) return false
+        if(this.props.newUser == false) return false;
+        if(this.state.clicked == true){
+            return(
+                <h3>Challenge accepted!</h3>
+            )
+        }
         return(<div>
-                <h3>Wybierz typ wyzwania:</h3>
+                <h3>Type of challenge:</h3>
                 <select onChange={this.props.handleChallengeTypeChange}>
                     <option value={"programming"}>Programming</option>
                     <option value={"running"}>Running</option>
                 </select>
-                <h3>Podaj swój cel</h3>
+                <h3>Your goal:</h3>
                 <input onChange={this.props.handleChallengeGoal}/><br/>
-                <button onClick={this.startChallenge}>Rozpocznij wyzwanie!</button>
+                <button onClick={this.startChallenge}>Start your challenge!</button>
             </div>
         )
     }
@@ -162,7 +173,8 @@ class OldUserChallenge extends React.Component{
             challengeProgress: "",
             todaysProgress: "",
             indexNr: "",
-            dbAdress: ""
+            dbAdress: "",
+            clicked: false
         }
     }
     handleChallengeProgress = (e) => {
@@ -179,6 +191,9 @@ class OldUserChallenge extends React.Component{
             body: JSON.stringify(progress),
             headers: {"Content-Type" : "application/json"}
         }).then(console.log(progress));
+        this.setState({
+            clicked: true
+        })
     }
     getNumber = (value, arr, prop) => {
         for(var i = 0; i < arr.length; i++) {
@@ -211,17 +226,28 @@ class OldUserChallenge extends React.Component{
     render(){
         if(this.props.newUser == true) return false;
         let toGo = this.state.challengeGoal - this.state.challengeProgress;
-        if(toGo<=0){
-            toGo = "Cel osiągnięty"
-        };
+        if(this.state.clicked == true){
+            if((toGo-this.state.todaysProgress)<=0){
+                return(
+                    <h3>Goal achieved! Good job!</h3>
+                )
+            }else{
+                return(
+                    <div>
+                        <h3>Progress saved!</h3>
+                        <p>You still have {toGo-this.state.todaysProgress} hours to achieve your goal!</p>
+                    </div>
+                )
+            }
+        }
         return(<div>
-                <h3>Cel: {this.state.challengeGoal}</h3>
-                <h3>Do celu: {toGo}</h3>
-                <h3>Dzień wyzwania: {this.state.dayOfTheChallenge}</h3>
-                <h3>Typ: {this.state.challengeType}</h3>
-                <h3>Wszisz swoje postępy:</h3>
+                <h3>Your goal: {this.state.challengeGoal}</h3>
+                <h3>Hours to achieve your goal: {toGo}</h3>
+                <h3>Day of your challenge: {this.state.dayOfTheChallenge}</h3>
+                <h3>Type of challenge: {this.state.challengeType}</h3>
+                <h3>Your latest progress:</h3>
                 <input onChange={this.handleChallengeProgress}/><br/>
-                <button onClick={this.handleProgress}>Zapisz postępy</button>
+                <button onClick={this.handleProgress}>Save your progress</button>
             </div>
         )
     }
@@ -234,7 +260,7 @@ class ChallengeInfo extends React.Component{
     render(){
         if (this.props.userLogged == false) return false
         return(<div>
-                <h1>Witaj {this.props.userName}!</h1>
+                <h1>Hi {this.props.userName}!</h1>
                 <NewUserChallenge challengeType={this.props.challengeType} challengeGoal={this.props.challengeGoal} userName={this.props.userName} userMail={this.props.userMail} newUser={this.props.newUser} handleChallengeGoal={this.props.handleChallengeGoal} handleChallengeTypeChange={this.props.handleChallengeTypeChange}/>
                 <OldUserChallenge users={this.props.users} userName={this.props.userName} userMail={this.props.userMail} newUser={this.props.newUser} />
             </div>
@@ -289,11 +315,11 @@ class App extends React.Component{
         }else {
             if (this.state.userMail.length == 0 || this.state.userName.length == 0) {
                 this.setState({
-                    actionLogInfo: "Wypełnij pola!"
+                    actionLogInfo: "Fill the form!"
                 })
             } else if (this.state.userMail.indexOf('@') < 0) {
                 this.setState({
-                    actionLogInfo: "Podaj prawidłowy adres e-mail!"
+                    actionLogInfo: "Wrong e-mail adress!"
                 })
             } else {
                 this.setState({
@@ -320,6 +346,7 @@ class App extends React.Component{
         }
         return(<div>
                 <h1>TheChallengeApp</h1>
+                <p>Created to help you achieve your goals!</p>
                 <LogPage userLogged={this.state.userLogged} actionLogin={this.setLogged} display={this.state.displayLog} userMail={this.state.userMail} users={this.state.users} userName={this.state.userName} handleMailChange={this.handleMailChange} handleNameChange={this.handleNameChange}/>
                 <ChallengeInfo users={this.state.users} challengeType={this.state.challengeType} challengeGoal={this.state.challengeGoal} userLogged={this.state.userLogged} newUser={this.state.newUser} handleChallengeGoal={this.handleChallengeGoal} handleChallengeTypeChange={this.handleChallengeTypeChange} users={this.state.users} userName={this.state.userName} userMail={this.state.userMail}/>
             </div>

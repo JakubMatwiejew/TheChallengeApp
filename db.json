@@ -1,49 +1,16 @@
 {
   "users": [
     {
-      "start": "2017-12-13T19:57:45.636Z",
-      "name": "a",
-      "mail": "a@",
+      "start": "2017-12-16T08:52:38.653Z",
+      "dd": 16,
+      "mm": 12,
+      "yyyy": 2017,
+      "name": "Kuba",
+      "mail": "kuba@",
       "type": "programming",
-      "goal": "1",
-      "progress": 0,
+      "goal": "10",
+      "progress": 10,
       "id": 1
-    },
-    {
-      "start": "2017-12-13T20:31:52.335Z",
-      "dd": 12,
-      "mm": 12,
-      "yyyy": 2017,
-      "name": "b",
-      "mail": "b@",
-      "type": "programming",
-      "goal": "1",
-      "progress": 6,
-      "id": 2
-    },
-    {
-      "start": "2017-12-13T20:46:35.513Z",
-      "dd": 13,
-      "mm": 12,
-      "yyyy": 2017,
-      "name": "c",
-      "mail": "c@",
-      "type": "programming",
-      "goal": "10",
-      "progress": 9,
-      "id": 3
-    },
-    {
-      "start": "2017-12-13T20:54:53.020Z",
-      "dd": 13,
-      "mm": 12,
-      "yyyy": 2017,
-      "name": "d",
-      "mail": "d@",
-      "type": "programming",
-      "goal": "10",
-      "progress": 6,
-      "id": 4
     }
   ]
 }

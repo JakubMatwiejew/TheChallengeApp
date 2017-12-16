@@ -10109,11 +10109,11 @@ var LogDetails = function (_React$Component) {
         _this.handleLogClick = function (e) {
             if (_this.props.userMail.length == 0 || _this.props.userName.length == 0) {
                 _this.setState({
-                    actionLogInfo: "Wypełnij pola!"
+                    actionLogInfo: "Fill the form!!"
                 });
             } else if (_this.props.userMail.indexOf('@') < 0) {
                 _this.setState({
-                    actionLogInfo: "Podaj prawidłowy adres e-mail!"
+                    actionLogInfo: "Wrong e-mail adress!!"
                 });
             } else {
                 _this.setState({
@@ -10222,7 +10222,7 @@ var LogPage = function (_React$Component2) {
                 _react2.default.createElement(
                     'h2',
                     null,
-                    'Type your user name to log in or register'
+                    'Type your user name and e-mail adress to log in or register'
                 ),
                 _react2.default.createElement(LogDetails, { actionLogin: this.props.actionLogin, actionLogInfo: this.props.actionLogInfo, handleLogClick: this.props.handleLogClick, userMail: this.props.userMail, users: this.props.users, userName: this.props.userName, handleMailChange: this.props.handleMailChange, handleNameChange: this.props.handleNameChange })
             );
@@ -10273,8 +10273,14 @@ var NewUserChallenge = function (_React$Component3) {
                 body: JSON.stringify(challengeDetails),
                 headers: { "Content-Type": "application/json" }
             }).then(console.log(challengeDetails));
+            _this3.setState({
+                clicked: true
+            });
         };
 
+        _this3.state = {
+            clicked: false
+        };
         return _this3;
     }
 
@@ -10282,13 +10288,20 @@ var NewUserChallenge = function (_React$Component3) {
         key: 'render',
         value: function render() {
             if (this.props.newUser == false) return false;
+            if (this.state.clicked == true) {
+                return _react2.default.createElement(
+                    'h3',
+                    null,
+                    'Challenge accepted!'
+                );
+            }
             return _react2.default.createElement(
                 'div',
                 null,
                 _react2.default.createElement(
                     'h3',
                     null,
-                    'Wybierz typ wyzwania:'
+                    'Type of challenge:'
                 ),
                 _react2.default.createElement(
                     'select',
@@ -10307,14 +10320,14 @@ var NewUserChallenge = function (_React$Component3) {
                 _react2.default.createElement(
                     'h3',
                     null,
-                    'Podaj sw\xF3j cel'
+                    'Your goal:'
                 ),
                 _react2.default.createElement('input', { onChange: this.props.handleChallengeGoal }),
                 _react2.default.createElement('br', null),
                 _react2.default.createElement(
                     'button',
                     { onClick: this.startChallenge },
-                    'Rozpocznij wyzwanie!'
+                    'Start your challenge!'
                 )
             );
         }
@@ -10346,6 +10359,9 @@ var OldUserChallenge = function (_React$Component4) {
                 body: JSON.stringify(progress),
                 headers: { "Content-Type": "application/json" }
             }).then(console.log(progress));
+            _this4.setState({
+                clicked: true
+            });
         };
 
         _this4.getNumber = function (value, arr, prop) {
@@ -10366,7 +10382,8 @@ var OldUserChallenge = function (_React$Component4) {
             challengeProgress: "",
             todaysProgress: "",
             indexNr: "",
-            dbAdress: ""
+            dbAdress: "",
+            clicked: false
         };
         return _this4;
     }
@@ -10398,47 +10415,70 @@ var OldUserChallenge = function (_React$Component4) {
         value: function render() {
             if (this.props.newUser == true) return false;
             var toGo = this.state.challengeGoal - this.state.challengeProgress;
-            if (toGo <= 0) {
-                toGo = "Cel osiągnięty";
-            };
+            if (this.state.clicked == true) {
+                if (toGo - this.state.todaysProgress <= 0) {
+                    return _react2.default.createElement(
+                        'h3',
+                        null,
+                        'Goal achieved! Good job!'
+                    );
+                } else {
+                    return _react2.default.createElement(
+                        'div',
+                        null,
+                        _react2.default.createElement(
+                            'h3',
+                            null,
+                            'Progress saved!'
+                        ),
+                        _react2.default.createElement(
+                            'p',
+                            null,
+                            'You still have ',
+                            toGo - this.state.todaysProgress,
+                            ' hours to achieve your goal!'
+                        )
+                    );
+                }
+            }
             return _react2.default.createElement(
                 'div',
                 null,
                 _react2.default.createElement(
                     'h3',
                     null,
-                    'Cel: ',
+                    'Your goal: ',
                     this.state.challengeGoal
                 ),
                 _react2.default.createElement(
                     'h3',
                     null,
-                    'Do celu: ',
+                    'Hours to achieve your goal: ',
                     toGo
                 ),
                 _react2.default.createElement(
                     'h3',
                     null,
-                    'Dzie\u0144 wyzwania: ',
+                    'Day of your challenge: ',
                     this.state.dayOfTheChallenge
                 ),
                 _react2.default.createElement(
                     'h3',
                     null,
-                    'Typ: ',
+                    'Type of challenge: ',
                     this.state.challengeType
                 ),
                 _react2.default.createElement(
                     'h3',
                     null,
-                    'Wszisz swoje post\u0119py:'
+                    'Your latest progress:'
                 ),
                 _react2.default.createElement('input', { onChange: this.handleChallengeProgress }),
                 _react2.default.createElement('br', null),
                 _react2.default.createElement(
                     'button',
                     { onClick: this.handleProgress },
-                    'Zapisz post\u0119py'
+                    'Save your progress'
                 )
             );
         }
@@ -10466,7 +10506,7 @@ var ChallengeInfo = function (_React$Component5) {
                 _react2.default.createElement(
                     'h1',
                     null,
-                    'Witaj ',
+                    'Hi ',
                     this.props.userName,
                     '!'
                 ),
@@ -10523,11 +10563,11 @@ var App = function (_React$Component6) {
             } else {
                 if (_this6.state.userMail.length == 0 || _this6.state.userName.length == 0) {
                     _this6.setState({
-                        actionLogInfo: "Wypełnij pola!"
+                        actionLogInfo: "Fill the form!"
                     });
                 } else if (_this6.state.userMail.indexOf('@') < 0) {
                     _this6.setState({
-                        actionLogInfo: "Podaj prawidłowy adres e-mail!"
+                        actionLogInfo: "Wrong e-mail adress!"
                     });
                 } else {
                     _this6.setState({
@@ -10584,6 +10624,11 @@ var App = function (_React$Component6) {
                     'h1',
                     null,
                     'TheChallengeApp'
+                ),
+                _react2.default.createElement(
+                    'p',
+                    null,
+                    'Created to help you achieve your goals!'
                 ),
                 _react2.default.createElement(LogPage, { userLogged: this.state.userLogged, actionLogin: this.setLogged, display: this.state.displayLog, userMail: this.state.userMail, users: this.state.users, userName: this.state.userName, handleMailChange: this.handleMailChange, handleNameChange: this.handleNameChange }),
                 _react2.default.createElement(ChallengeInfo, (_React$createElement = { users: this.state.users, challengeType: this.state.challengeType, challengeGoal: this.state.challengeGoal, userLogged: this.state.userLogged, newUser: this.state.newUser, handleChallengeGoal: this.handleChallengeGoal, handleChallengeTypeChange: this.handleChallengeTypeChange }, _defineProperty(_React$createElement, 'users', this.state.users), _defineProperty(_React$createElement, 'userName', this.state.userName), _defineProperty(_React$createElement, 'userMail', this.state.userMail), _React$createElement))
@@ -23075,7 +23120,7 @@ module.exports = ReactDOMInvalidARIAHook;
 /* 186 */
 /***/ (function(module, exports) {
 
-// removed by extract-text-webpack-plugin
+throw new Error("Module build failed: ModuleBuildError: Module build failed: \n  back\n ^\n      Property \"back\" must be followed by a ':'\n      in /Users/kuba/Documents/GitHub/TheChallengeApp/src/scss/style.scss (line 2, column 3)\n    at runLoaders (/Users/kuba/Documents/GitHub/TheChallengeApp/node_modules/webpack/lib/NormalModule.js:195:19)\n    at /Users/kuba/Documents/GitHub/TheChallengeApp/node_modules/loader-runner/lib/LoaderRunner.js:364:11\n    at /Users/kuba/Documents/GitHub/TheChallengeApp/node_modules/loader-runner/lib/LoaderRunner.js:230:18\n    at context.callback (/Users/kuba/Documents/GitHub/TheChallengeApp/node_modules/loader-runner/lib/LoaderRunner.js:111:13)\n    at Object.asyncSassJobQueue.push [as callback] (/Users/kuba/Documents/GitHub/TheChallengeApp/node_modules/sass-loader/lib/loader.js:55:13)\n    at Object.<anonymous> (/Users/kuba/Documents/GitHub/TheChallengeApp/node_modules/async/dist/async.js:2257:31)\n    at Object.callback (/Users/kuba/Documents/GitHub/TheChallengeApp/node_modules/async/dist/async.js:958:16)\n    at options.error (/Users/kuba/Documents/GitHub/TheChallengeApp/node_modules/node-sass/lib/index.js:294:32)");
 
 /***/ })
 /******/ ]);
