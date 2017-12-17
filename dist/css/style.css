@@ -1,0 +1,33 @@
+html {
+  font-family: 'Muli', sans-serif; }
+  html body {
+    margin: 0;
+    padding: 0; }
+
+.app {
+  display: flex; }
+
+.right {
+  width: 50%;
+  height: 100vh;
+  background-size: cover;
+  background-position: right; }
+
+button {
+  background-color: orange;
+  color: white;
+  border: 0px orange solid;
+  border-radius: 3px;
+  height: 30px;
+  margin-top: 20px; }
+
+.left {
+  width: 50%;
+  height: 100vh;
+  padding: 0 20px; }
+  .left h1 {
+    font-weight: 900; }
+  .left p {
+    font-weight: 300; }
+  .left input {
+    margin: 5px auto; }

@@ -10184,7 +10184,7 @@ var LogDetails = function (_React$Component) {
                 null,
                 _react2.default.createElement(
                     'p',
-                    null,
+                    { style: { color: 'red' } },
                     this.state.actionLogInfo
                 ),
                 _react2.default.createElement('input', { onChange: this.handleNameChange, value: this.props.userName, placeholder: 'Your user name' }),
@@ -10242,49 +10242,72 @@ var NewUserChallenge = function (_React$Component3) {
 
         _this3.handleChallengeTypeChange = function (e) {
             if (typeof _this3.props.handleChallengeTypeChange === 'function') {
-                _this3.props.handleChallengeTypeChange;
+                _this3.props.handleChallengeTypeChange(e);
             }
         };
 
         _this3.handleChallengeGoal = function (e) {
             if (typeof _this3.props.handleChallengeGoal === 'function') {
-                _this3.props.handleChallengeGoal;
+                _this3.props.handleChallengeGoal(e);
             }
         };
 
         _this3.startChallenge = function () {
-            var startDate = new Date();
-            var dd = startDate.getDate();
-            var mm = startDate.getMonth() + 1;
-            var yyyy = startDate.getFullYear();
-            var challengeDetails = {
-                start: startDate,
-                dd: dd,
-                mm: mm,
-                yyyy: yyyy,
-                name: _this3.props.userName,
-                mail: _this3.props.userMail,
-                type: _this3.props.challengeType,
-                goal: _this3.props.challengeGoal,
-                progress: 0
-            };
-            fetch('http://localhost:3000/users', {
-                method: 'POST',
-                body: JSON.stringify(challengeDetails),
-                headers: { "Content-Type": "application/json" }
-            }).then(console.log(challengeDetails));
-            _this3.setState({
-                clicked: true
-            });
+            if (isNaN(parseInt(_this3.state.newGoal)) || _this3.state.newGoal.length <= 0) {
+                _this3.setState({
+                    typeInfo: "Type a number higher than 0!"
+                });
+            } else {
+                var startDate = new Date();
+                var dd = startDate.getDate();
+                var mm = startDate.getMonth() + 1;
+                var yyyy = startDate.getFullYear();
+                var challengeDetails = {
+                    start: startDate,
+                    dd: dd,
+                    mm: mm,
+                    yyyy: yyyy,
+                    name: _this3.props.userName,
+                    mail: _this3.props.userMail,
+                    type: _this3.props.challengeType,
+                    goal: _this3.props.challengeGoal,
+                    progress: 0
+                };
+                fetch('http://localhost:3000/users', {
+                    method: 'POST',
+                    body: JSON.stringify(challengeDetails),
+                    headers: { "Content-Type": "application/json" }
+                }).then(console.log(challengeDetails));
+                _this3.setState({
+                    clicked: true
+                });
+            }
         };
 
         _this3.state = {
-            clicked: false
+            clicked: false,
+            newGoal: "",
+            type: "programming",
+            typeInfo: ""
         };
         return _this3;
     }
 
     _createClass(NewUserChallenge, [{
+        key: 'componentDidUpdate',
+        value: function componentDidUpdate() {
+            console.log(this.props.challengeGoal);
+            if (this.state.newGoal != this.props.challengeGoal) {
+                this.setState({
+                    newGoal: this.props.challengeGoal
+                });
+            }if (this.state.type != this.props.challengeType) {
+                this.setState({
+                    type: this.props.challengeType
+                });
+            }
+        }
+    }, {
         key: 'render',
         value: function render() {
             if (this.props.newUser == false) return false;
@@ -10305,7 +10328,7 @@ var NewUserChallenge = function (_React$Component3) {
                 ),
                 _react2.default.createElement(
                     'select',
-                    { onChange: this.props.handleChallengeTypeChange },
+                    { onChange: this.handleChallengeTypeChange },
                     _react2.default.createElement(
                         'option',
                         { value: "programming" },
@@ -10322,7 +10345,18 @@ var NewUserChallenge = function (_React$Component3) {
                     null,
                     'Your goal:'
                 ),
-                _react2.default.createElement('input', { onChange: this.props.handleChallengeGoal }),
+                _react2.default.createElement(
+                    'p',
+                    null,
+                    'Type number of hours you want to spend on ',
+                    this.state.type
+                ),
+                _react2.default.createElement(
+                    'p',
+                    { style: { color: 'red' } },
+                    this.state.typeInfo
+                ),
+                _react2.default.createElement('input', { onChange: this.handleChallengeGoal }),
                 _react2.default.createElement('br', null),
                 _react2.default.createElement(
                     'button',
@@ -10351,17 +10385,23 @@ var OldUserChallenge = function (_React$Component4) {
         };
 
         _this4.handleProgress = function (e) {
-            var progress = {
-                progress: parseInt(_this4.state.challengeProgress) + parseInt(_this4.state.todaysProgress)
-            };
-            fetch(_this4.state.dbAdress, {
-                method: 'PATCH',
-                body: JSON.stringify(progress),
-                headers: { "Content-Type": "application/json" }
-            }).then(console.log(progress));
-            _this4.setState({
-                clicked: true
-            });
+            if (isNaN(parseInt(_this4.state.todaysProgress)) || _this4.state.todaysProgress.length <= 0) {
+                _this4.setState({
+                    progressInfo: "Type a number higher than 0!"
+                });
+            } else {
+                var progress = {
+                    progress: parseInt(_this4.state.challengeProgress) + parseInt(_this4.state.todaysProgress)
+                };
+                fetch(_this4.state.dbAdress, {
+                    method: 'PATCH',
+                    body: JSON.stringify(progress),
+                    headers: { "Content-Type": "application/json" }
+                }).then(console.log(progress));
+                _this4.setState({
+                    clicked: true
+                });
+            }
         };
 
         _this4.getNumber = function (value, arr, prop) {
@@ -10371,6 +10411,13 @@ var OldUserChallenge = function (_React$Component4) {
                 }
             }
             return -1;
+        };
+
+        _this4.newChallenge = function () {
+            window.location.reload();
+            fetch(_this4.state.dbAdress, {
+                method: 'DELETE'
+            }).then(console.log("Deleted"));
         };
 
         _this4.state = {
@@ -10383,7 +10430,8 @@ var OldUserChallenge = function (_React$Component4) {
             todaysProgress: "",
             indexNr: "",
             dbAdress: "",
-            clicked: false
+            clicked: false,
+            progressInfo: ""
         };
         return _this4;
     }
@@ -10391,6 +10439,8 @@ var OldUserChallenge = function (_React$Component4) {
     _createClass(OldUserChallenge, [{
         key: 'componentDidMount',
         value: function componentDidMount() {
+            var _this5 = this;
+
             var indexNr = this.getNumber(this.props.userName, this.props.users, "name");
             var dd = this.props.users[indexNr].dd;
             var mm = this.props.users[indexNr].mm;
@@ -10408,6 +10458,9 @@ var OldUserChallenge = function (_React$Component4) {
                 challengeProgress: this.props.users[indexNr].progress,
                 dbAdress: 'http://localhost:3000/users/' + (indexNr + 1),
                 indexNr: indexNr + 1
+            }, function () {
+                console.log('test');
+                _this5.props.setBackground(_this5.state.challengeType);
             });
         }
     }, {
@@ -10415,12 +10468,53 @@ var OldUserChallenge = function (_React$Component4) {
         value: function render() {
             if (this.props.newUser == true) return false;
             var toGo = this.state.challengeGoal - this.state.challengeProgress;
+            if (this.state.dayOfTheChallenge > 7) {
+                return _react2.default.createElement(
+                    'div',
+                    null,
+                    _react2.default.createElement(
+                        'h3',
+                        null,
+                        'Your challenge has ended!'
+                    ),
+                    _react2.default.createElement(
+                        'button',
+                        { onClick: this.newChallenge },
+                        'Start new challenge!'
+                    )
+                );
+            }
+            if (toGo <= 0) {
+                return _react2.default.createElement(
+                    'div',
+                    null,
+                    _react2.default.createElement(
+                        'h3',
+                        null,
+                        'You already finished your challenge!'
+                    ),
+                    _react2.default.createElement(
+                        'button',
+                        { onClick: this.newChallenge },
+                        'Start new challenge!'
+                    )
+                );
+            }
             if (this.state.clicked == true) {
                 if (toGo - this.state.todaysProgress <= 0) {
                     return _react2.default.createElement(
-                        'h3',
+                        'div',
                         null,
-                        'Goal achieved! Good job!'
+                        _react2.default.createElement(
+                            'h3',
+                            null,
+                            'Goal achieved! Good job!'
+                        ),
+                        _react2.default.createElement(
+                            'button',
+                            { onClick: this.newChallenge },
+                            'Start new challenge!'
+                        )
                     );
                 } else {
                     return _react2.default.createElement(
@@ -10445,33 +10539,54 @@ var OldUserChallenge = function (_React$Component4) {
                 'div',
                 null,
                 _react2.default.createElement(
-                    'h3',
+                    'p',
                     null,
                     'Your goal: ',
-                    this.state.challengeGoal
+                    _react2.default.createElement(
+                        'strong',
+                        null,
+                        this.state.challengeGoal
+                    )
                 ),
                 _react2.default.createElement(
-                    'h3',
+                    'p',
                     null,
                     'Hours to achieve your goal: ',
-                    toGo
+                    _react2.default.createElement(
+                        'strong',
+                        null,
+                        toGo
+                    )
                 ),
                 _react2.default.createElement(
-                    'h3',
+                    'p',
                     null,
                     'Day of your challenge: ',
-                    this.state.dayOfTheChallenge
+                    _react2.default.createElement(
+                        'strong',
+                        null,
+                        this.state.dayOfTheChallenge
+                    )
                 ),
                 _react2.default.createElement(
-                    'h3',
+                    'p',
                     null,
                     'Type of challenge: ',
-                    this.state.challengeType
+                    _react2.default.createElement(
+                        'strong',
+                        null,
+                        this.state.challengeType
+                    )
                 ),
                 _react2.default.createElement(
-                    'h3',
+                    'p',
                     null,
                     'Your latest progress:'
+                ),
+                _react2.default.createElement(
+                    'p',
+                    { style: { color: 'red' } },
+                    this.state.progressInfo
                 ),
                 _react2.default.createElement('input', { onChange: this.handleChallengeProgress }),
                 _react2.default.createElement('br', null),
@@ -10511,7 +10626,7 @@ var ChallengeInfo = function (_React$Component5) {
                     '!'
                 ),
                 _react2.default.createElement(NewUserChallenge, { challengeType: this.props.challengeType, challengeGoal: this.props.challengeGoal, userName: this.props.userName, userMail: this.props.userMail, newUser: this.props.newUser, handleChallengeGoal: this.props.handleChallengeGoal, handleChallengeTypeChange: this.props.handleChallengeTypeChange }),
-                _react2.default.createElement(OldUserChallenge, { users: this.props.users, userName: this.props.userName, userMail: this.props.userMail, newUser: this.props.newUser })
+                _react2.default.createElement(OldUserChallenge, { setBackground: this.props.setBackground, users: this.props.users, userName: this.props.userName, userMail: this.props.userMail, newUser: this.props.newUser })
             );
         }
     }]);
@@ -10525,52 +10640,52 @@ var App = function (_React$Component6) {
     function App(props) {
         _classCallCheck(this, App);
 
-        var _this6 = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
+        var _this7 = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
 
-        _this6.setLogged = function (logged, newUser) {
-            return _this6.setState({ userLogged: logged, newUser: newUser });
+        _this7.setLogged = function (logged, newUser) {
+            return _this7.setState({ userLogged: logged, newUser: newUser });
         };
 
-        _this6.handleNameChange = function (e) {
-            _this6.setState({
+        _this7.handleNameChange = function (e) {
+            _this7.setState({
                 userName: e.target.value
             });
         };
 
-        _this6.handleMailChange = function (e) {
-            _this6.setState({
+        _this7.handleMailChange = function (e) {
+            _this7.setState({
                 userMail: e.target.value
             });
         };
 
-        _this6.handleChallengeTypeChange = function (e) {
-            _this6.setState({
+        _this7.handleChallengeTypeChange = function (e) {
+            _this7.setState({
                 challengeType: e.target.value
             });
         };
 
-        _this6.handleChallengeGoal = function (e) {
-            _this6.setState({
+        _this7.handleChallengeGoal = function (e) {
+            _this7.setState({
                 challengeGoal: e.target.value
             });
         };
 
-        _this6.handleLogClick = function (e, logged) {
+        _this7.handleLogClick = function (e, logged) {
             if (logged) {
-                _this6.setState({
+                _this7.setState({
                     newUser: false
                 });
             } else {
-                if (_this6.state.userMail.length == 0 || _this6.state.userName.length == 0) {
-                    _this6.setState({
+                if (_this7.state.userMail.length == 0 || _this7.state.userName.length == 0) {
+                    _this7.setState({
                         actionLogInfo: "Fill the form!"
                     });
-                } else if (_this6.state.userMail.indexOf('@') < 0) {
-                    _this6.setState({
+                } else if (_this7.state.userMail.indexOf('@') < 0) {
+                    _this7.setState({
                         actionLogInfo: "Wrong e-mail adress!"
                     });
                 } else {
-                    _this6.setState({
+                    _this7.setState({
                         actionLogInfo: "",
                         displayLog: false
                     });
@@ -10578,7 +10693,13 @@ var App = function (_React$Component6) {
             }
         };
 
-        _this6.state = {
+        _this7.setBackground = function (url) {
+            _this7.setState({
+                backgroundUrl: "./dist/img/" + url + ".jpg"
+            });
+        };
+
+        _this7.state = {
             userName: "",
             userMail: "",
             users: null,
@@ -10587,24 +10708,25 @@ var App = function (_React$Component6) {
             challengeGoal: "",
             challengeProgress: "",
             displayLog: true,
-            userLogged: false
+            userLogged: false,
+            backgroundUrl: "./dist/img/background.jpg"
         };
-        return _this6;
+        return _this7;
     }
 
     _createClass(App, [{
         key: 'componentDidMount',
         value: function componentDidMount() {
-            var _this7 = this;
+            var _this8 = this;
 
             fetch('http://localhost:3000/users').then(function (r) {
                 return r.json();
             }).then(function (data) {
-                _this7.setState({});
+                _this8.setState({});
                 var users = Object.keys(data).map(function (id) {
                     return data[id];
                 });
-                _this7.setState({
+                _this8.setState({
                     users: users
                 });
             });
@@ -10619,19 +10741,24 @@ var App = function (_React$Component6) {
             }
             return _react2.default.createElement(
                 'div',
-                null,
+                { className: 'app' },
                 _react2.default.createElement(
-                    'h1',
-                    null,
-                    'TheChallengeApp'
+                    'div',
+                    { className: 'left' },
+                    _react2.default.createElement(
+                        'h1',
+                        null,
+                        'The Challenge App'
+                    ),
+                    _react2.default.createElement(
+                        'p',
+                        null,
+                        'Created to help you achieve your goals!'
+                    ),
+                    _react2.default.createElement(LogPage, { userLogged: this.state.userLogged, actionLogin: this.setLogged, display: this.state.displayLog, userMail: this.state.userMail, users: this.state.users, userName: this.state.userName, handleMailChange: this.handleMailChange, handleNameChange: this.handleNameChange }),
+                    _react2.default.createElement(ChallengeInfo, (_React$createElement = { setBackground: this.setBackground, users: this.state.users, challengeType: this.state.challengeType, challengeGoal: this.state.challengeGoal, userLogged: this.state.userLogged, newUser: this.state.newUser, handleChallengeGoal: this.handleChallengeGoal, handleChallengeTypeChange: this.handleChallengeTypeChange }, _defineProperty(_React$createElement, 'users', this.state.users), _defineProperty(_React$createElement, 'userName', this.state.userName), _defineProperty(_React$createElement, 'userMail', this.state.userMail), _React$createElement))
                 ),
-                _react2.default.createElement(
-                    'p',
-                    null,
-                    'Created to help you achieve your goals!'
-                ),
-                _react2.default.createElement(LogPage, { userLogged: this.state.userLogged, actionLogin: this.setLogged, display: this.state.displayLog, userMail: this.state.userMail, users: this.state.users, userName: this.state.userName, handleMailChange: this.handleMailChange, handleNameChange: this.handleNameChange }),
-                _react2.default.createElement(ChallengeInfo, (_React$createElement = { users: this.state.users, challengeType: this.state.challengeType, challengeGoal: this.state.challengeGoal, userLogged: this.state.userLogged, newUser: this.state.newUser, handleChallengeGoal: this.handleChallengeGoal, handleChallengeTypeChange: this.handleChallengeTypeChange }, _defineProperty(_React$createElement, 'users', this.state.users), _defineProperty(_React$createElement, 'userName', this.state.userName), _defineProperty(_React$createElement, 'userMail', this.state.userMail), _React$createElement))
+                _react2.default.createElement('div', { className: 'right', style: { backgroundImage: "url(" + this.state.backgroundUrl + ")" } })
             );
         }
     }]);
@@ -23120,7 +23247,7 @@ module.exports = ReactDOMInvalidARIAHook;
 /* 186 */
 /***/ (function(module, exports) {
 
-throw new Error("Module build failed: ModuleBuildError: Module build failed: \n  back\n ^\n      Property \"back\" must be followed by a ':'\n      in /Users/kuba/Documents/GitHub/TheChallengeApp/src/scss/style.scss (line 2, column 3)\n    at runLoaders (/Users/kuba/Documents/GitHub/TheChallengeApp/node_modules/webpack/lib/NormalModule.js:195:19)\n    at /Users/kuba/Documents/GitHub/TheChallengeApp/node_modules/loader-runner/lib/LoaderRunner.js:364:11\n    at /Users/kuba/Documents/GitHub/TheChallengeApp/node_modules/loader-runner/lib/LoaderRunner.js:230:18\n    at context.callback (/Users/kuba/Documents/GitHub/TheChallengeApp/node_modules/loader-runner/lib/LoaderRunner.js:111:13)\n    at Object.asyncSassJobQueue.push [as callback] (/Users/kuba/Documents/GitHub/TheChallengeApp/node_modules/sass-loader/lib/loader.js:55:13)\n    at Object.<anonymous> (/Users/kuba/Documents/GitHub/TheChallengeApp/node_modules/async/dist/async.js:2257:31)\n    at Object.callback (/Users/kuba/Documents/GitHub/TheChallengeApp/node_modules/async/dist/async.js:958:16)\n    at options.error (/Users/kuba/Documents/GitHub/TheChallengeApp/node_modules/node-sass/lib/index.js:294:32)");
+// removed by extract-text-webpack-plugin
 
 /***/ })
 /******/ ]);

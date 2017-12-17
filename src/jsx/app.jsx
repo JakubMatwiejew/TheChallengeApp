@@ -77,7 +77,7 @@ class LogDetails extends React.Component{
     }
     render(){
         return(<div>
-                <p>{this.state.actionLogInfo}</p>
+                <p style={{color: 'red'}}>{this.state.actionLogInfo}</p>
                 <input onChange={this.handleNameChange} value={this.props.userName} placeholder={'Your user name'}/><br/>
                 <input onChange={this.handleMailChange} value={this.props.userMail} placeholder={'Your e-mail adress'}/><br/>
                 <button onClick={this.handleLogClick}>{this.state.buttonText}</button>
@@ -101,44 +101,64 @@ class NewUserChallenge extends React.Component{
     constructor(props) {
         super(props);
         this.state={
-            clicked: false
+            clicked: false,
+            newGoal: "",
+            type: "programming",
+            typeInfo: ""
         }
     }
-
     handleChallengeTypeChange = (e) => {
         if( typeof this.props.handleChallengeTypeChange === 'function'){
-            this.props.handleChallengeTypeChange;
+            this.props.handleChallengeTypeChange(e);
         }
     }
     handleChallengeGoal = (e) => {
         if( typeof this.props.handleChallengeGoal === 'function'){
-            this.props.handleChallengeGoal;
+            this.props.handleChallengeGoal(e);
+        }
+    }
+    componentDidUpdate(){
+        console.log(this.props.challengeGoal);
+        if(this.state.newGoal != this.props.challengeGoal){
+            this.setState({
+                newGoal: this.props.challengeGoal
+            })
+        }if(this.state.type != this.props.challengeType){
+            this.setState({
+                type: this.props.challengeType
+            })
         }
     }
     startChallenge = () => {
-        let startDate = new Date();
-        var dd = startDate.getDate();
-        var mm = startDate.getMonth()+1;
-        var yyyy = startDate.getFullYear();
-        const challengeDetails = {
-            start: startDate,
-            dd: dd,
-            mm: mm,
-            yyyy: yyyy,
-            name: this.props.userName,
-            mail: this.props.userMail,
-            type: this.props.challengeType,
-            goal: this.props.challengeGoal,
-            progress: 0
-        };
-        fetch('http://localhost:3000/users',{
-            method: 'POST',
-            body: JSON.stringify(challengeDetails),
-            headers: {"Content-Type" : "application/json"}
-        }).then(console.log(challengeDetails));
-        this.setState({
-            clicked: true
-        })
+        if( isNaN(parseInt(this.state.newGoal)) || this.state.newGoal.length <= 0){
+            this.setState({
+                typeInfo: "Type a number higher than 0!"
+            })
+        }else{
+            let startDate = new Date();
+            var dd = startDate.getDate();
+            var mm = startDate.getMonth()+1;
+            var yyyy = startDate.getFullYear();
+            const challengeDetails = {
+                start: startDate,
+                dd: dd,
+                mm: mm,
+                yyyy: yyyy,
+                name: this.props.userName,
+                mail: this.props.userMail,
+                type: this.props.challengeType,
+                goal: this.props.challengeGoal,
+                progress: 0
+            };
+            fetch('http://localhost:3000/users',{
+                method: 'POST',
+                body: JSON.stringify(challengeDetails),
+                headers: {"Content-Type" : "application/json"}
+            }).then(console.log(challengeDetails));
+            this.setState({
+                clicked: true
+            })
+        }
     }
     render(){
         if(this.props.newUser == false) return false;
@@ -149,12 +169,14 @@ class NewUserChallenge extends React.Component{
         }
         return(<div>
                 <h3>Type of challenge:</h3>
-                <select onChange={this.props.handleChallengeTypeChange}>
+                <select onChange={this.handleChallengeTypeChange}>
                     <option value={"programming"}>Programming</option>
                     <option value={"running"}>Running</option>
                 </select>
                 <h3>Your goal:</h3>
-                <input onChange={this.props.handleChallengeGoal}/><br/>
+                <p>Type number of hours you want to spend on {this.state.type}</p>
+                <p style={{color: 'red'}}>{this.state.typeInfo}</p>
+                <input onChange={this.handleChallengeGoal}/><br/>
                 <button onClick={this.startChallenge}>Start your challenge!</button>
             </div>
         )
@@ -174,7 +196,8 @@ class OldUserChallenge extends React.Component{
             todaysProgress: "",
             indexNr: "",
             dbAdress: "",
-            clicked: false
+            clicked: false,
+            progressInfo: ""
         }
     }
     handleChallengeProgress = (e) => {
@@ -183,17 +206,23 @@ class OldUserChallenge extends React.Component{
         })
     }
     handleProgress = (e) => {
-        const progress = {
-            progress: parseInt(this.state.challengeProgress) + parseInt(this.state.todaysProgress)
+        if( isNaN(parseInt(this.state.todaysProgress)) || this.state.todaysProgress.length <= 0){
+            this.setState({
+                progressInfo: "Type a number higher than 0!"
+            })
+        }else{
+            const progress = {
+                progress: parseInt(this.state.challengeProgress) + parseInt(this.state.todaysProgress)
+            }
+            fetch(this.state.dbAdress,{
+                method: 'PATCH',
+                body: JSON.stringify(progress),
+                headers: {"Content-Type" : "application/json"}
+            }).then(console.log(progress));
+            this.setState({
+                clicked: true
+            })
         }
-        fetch(this.state.dbAdress,{
-            method: 'PATCH',
-            body: JSON.stringify(progress),
-            headers: {"Content-Type" : "application/json"}
-        }).then(console.log(progress));
-        this.setState({
-            clicked: true
-        })
     }
     getNumber = (value, arr, prop) => {
         for(var i = 0; i < arr.length; i++) {
@@ -202,6 +231,12 @@ class OldUserChallenge extends React.Component{
             }
         }
         return -1;
+    }
+    newChallenge = () => {
+        window.location.reload();
+        fetch(this.state.dbAdress,{
+            method: 'DELETE',
+        }).then(console.log("Deleted"));
     }
     componentDidMount(){
         var indexNr = this.getNumber (this.props.userName, this.props.users, "name");
@@ -221,15 +256,34 @@ class OldUserChallenge extends React.Component{
             challengeProgress: this.props.users[indexNr].progress,
             dbAdress: 'http://localhost:3000/users/'+(indexNr+1),
             indexNr: indexNr+1
+        },()=>{
+            console.log('test');
+            this.props.setBackground(this.state.challengeType)
         })
     }
     render(){
         if(this.props.newUser == true) return false;
         let toGo = this.state.challengeGoal - this.state.challengeProgress;
+        if(this.state.dayOfTheChallenge > 7){
+            return (<div>
+                    <h3>Your challenge has ended!</h3>
+                    <button onClick={this.newChallenge}>Start new challenge!</button>
+                </div>
+            )
+        }
+        if(toGo<=0) {
+            return (<div>
+                    <h3>You already finished your challenge!</h3>
+                    <button onClick={this.newChallenge}>Start new challenge!</button>
+                </div>
+            )
+        }
         if(this.state.clicked == true){
             if((toGo-this.state.todaysProgress)<=0){
-                return(
-                    <h3>Goal achieved! Good job!</h3>
+                return(<div>
+                        <h3>Goal achieved! Good job!</h3>
+                        <button onClick={this.newChallenge}>Start new challenge!</button>
+                    </div>
                 )
             }else{
                 return(
@@ -241,11 +295,12 @@ class OldUserChallenge extends React.Component{
             }
         }
         return(<div>
-                <h3>Your goal: {this.state.challengeGoal}</h3>
-                <h3>Hours to achieve your goal: {toGo}</h3>
-                <h3>Day of your challenge: {this.state.dayOfTheChallenge}</h3>
-                <h3>Type of challenge: {this.state.challengeType}</h3>
-                <h3>Your latest progress:</h3>
+                <p>Your goal: <strong>{this.state.challengeGoal}</strong></p>
+                <p>Hours to achieve your goal: <strong>{toGo}</strong></p>
+                <p>Day of your challenge: <strong>{this.state.dayOfTheChallenge}</strong></p>
+                <p>Type of challenge: <strong>{this.state.challengeType}</strong></p>
+                <p>Your latest progress:</p>
+                <p style={{color: 'red'}}>{this.state.progressInfo}</p>
                 <input onChange={this.handleChallengeProgress}/><br/>
                 <button onClick={this.handleProgress}>Save your progress</button>
             </div>
@@ -262,7 +317,7 @@ class ChallengeInfo extends React.Component{
         return(<div>
                 <h1>Hi {this.props.userName}!</h1>
                 <NewUserChallenge challengeType={this.props.challengeType} challengeGoal={this.props.challengeGoal} userName={this.props.userName} userMail={this.props.userMail} newUser={this.props.newUser} handleChallengeGoal={this.props.handleChallengeGoal} handleChallengeTypeChange={this.props.handleChallengeTypeChange}/>
-                <OldUserChallenge users={this.props.users} userName={this.props.userName} userMail={this.props.userMail} newUser={this.props.newUser} />
+                <OldUserChallenge setBackground={this.props.setBackground} users={this.props.users} userName={this.props.userName} userMail={this.props.userMail} newUser={this.props.newUser} />
             </div>
         )
     }
@@ -280,7 +335,8 @@ class App extends React.Component{
             challengeGoal: "",
             challengeProgress: "",
             displayLog: true,
-            userLogged: false
+            userLogged: false,
+            backgroundUrl: "./dist/img/background.jpg"
         }
     }
 
@@ -329,6 +385,11 @@ class App extends React.Component{
             }
         }
     }
+    setBackground = (url) => {
+        this.setState({
+            backgroundUrl: "./dist/img/"+url+".jpg"
+        })
+    }
     componentDidMount(){
         fetch('http://localhost:3000/users')
             .then(r => r.json())
@@ -344,11 +405,15 @@ class App extends React.Component{
         if (!this.state.users) {
             return <div />
         }
-        return(<div>
-                <h1>TheChallengeApp</h1>
-                <p>Created to help you achieve your goals!</p>
-                <LogPage userLogged={this.state.userLogged} actionLogin={this.setLogged} display={this.state.displayLog} userMail={this.state.userMail} users={this.state.users} userName={this.state.userName} handleMailChange={this.handleMailChange} handleNameChange={this.handleNameChange}/>
-                <ChallengeInfo users={this.state.users} challengeType={this.state.challengeType} challengeGoal={this.state.challengeGoal} userLogged={this.state.userLogged} newUser={this.state.newUser} handleChallengeGoal={this.handleChallengeGoal} handleChallengeTypeChange={this.handleChallengeTypeChange} users={this.state.users} userName={this.state.userName} userMail={this.state.userMail}/>
+        return(<div className='app'>
+                <div className='left'>
+                    <h1>The Challenge App</h1>
+                    <p>Created to help you achieve your goals!</p>
+                    <LogPage userLogged={this.state.userLogged} actionLogin={this.setLogged} display={this.state.displayLog} userMail={this.state.userMail} users={this.state.users} userName={this.state.userName} handleMailChange={this.handleMailChange} handleNameChange={this.handleNameChange}/>
+                    <ChallengeInfo setBackground={this.setBackground} users={this.state.users} challengeType={this.state.challengeType} challengeGoal={this.state.challengeGoal} userLogged={this.state.userLogged} newUser={this.state.newUser} handleChallengeGoal={this.handleChallengeGoal} handleChallengeTypeChange={this.handleChallengeTypeChange} users={this.state.users} userName={this.state.userName} userMail={this.state.userMail}/>
+                </div>
+                <div className='right' style={{backgroundImage: "url(" + this.state.backgroundUrl + ")"}}>
+                </div>
             </div>
         )
     }

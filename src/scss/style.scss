@@ -1,0 +1,38 @@
+html{
+  font-family: 'Muli', sans-serif;
+    body{
+    margin: 0;
+    padding: 0;
+  }
+}
+.app{
+  display: flex;
+}
+.right{
+  width: 50%;
+  height: 100vh;
+  background-size: cover;
+  background-position: right;
+}
+button {
+  background-color: orange;
+  color: white;
+  border: 0px orange solid;
+  border-radius: 3px;
+  height: 30px;
+  margin-top: 20px;
+}
+.left{
+  h1{
+    font-weight: 900;
+  }
+  p{
+    font-weight: 300;
+  }
+  input{
+    margin: 5px auto;
+  }
+  width: 50%;
+  height: 100vh;
+  padding: 0 20px;
+}
