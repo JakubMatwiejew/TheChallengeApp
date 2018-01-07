@@ -1,40 +1,5 @@
 {
   "users": [
-    {
-      "start": "2017-12-17T12:22:18.292Z",
-      "dd": 17,
-      "mm": 12,
-      "yyyy": 2017,
-      "name": "Kuba",
-      "mail": "kuba@",
-      "type": "programming",
-      "goal": "10",
-      "progress": 0,
-      "id": 1
-    },
-    {
-      "start": "2017-12-17T12:22:58.592Z",
-      "dd": 17,
-      "mm": 12,
-      "yyyy": 2017,
-      "name": "Kasia",
-      "mail": "kasia@",
-      "type": "running",
-      "goal": "20",
-      "progress": 0,
-      "id": 2
-    },
-    {
-      "start": "2017-12-09T12:23:09.303Z",
-      "dd": 9,
-      "mm": 12,
-      "yyyy": 2017,
-      "name": "Ida",
-      "mail": "ida@",
-      "type": "programming",
-      "goal": "10",
-      "progress": 0,
-      "id": 3
-    }
+
   ]
 }
