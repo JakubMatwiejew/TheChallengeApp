@@ -5,11 +5,23 @@
       "dd": 15,
       "mm": 1,
       "yyyy": 2018,
-      "name": "Ola",
-      "mail": "ola@example.com",
+      "name": "Coder",
+      "mail": "coder@challenge.com",
       "type": "programming",
       "goal": "10",
       "progress": 3,
+      "id": 1
+    },
+    {
+      "start": "2018-01-15T14:16:27.397Z",
+      "dd": 21,
+      "mm": 1,
+      "yyyy": 2018,
+      "name": "Runner",
+      "mail": "runner@challenge.com",
+      "type": "running",
+      "goal": "20",
+      "progress": 15,
       "id": 1
     }
   ]
